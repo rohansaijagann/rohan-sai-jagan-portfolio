@@ -1,0 +1,310 @@
+@import "tailwindcss";
+
+:root,
+[data-theme="dark-plus"] {
+  --color-bg: #0a0c10;
+  --color-surface-1: #12151c;
+  --color-surface-2: #181c25;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-text-primary: #f4f6fb;
+  --color-text-secondary: #aab2c0;
+
+  /* VS Code Dark+ Syntax Colors */
+  --syn-blue: #569cd6;
+  --syn-orange: #ce9178;
+  --syn-yellow: #dcdcaa;
+  --syn-teal: #4ec9b0;
+  --syn-purple: #c586c0;
+  --syn-green: #6a9955;
+  --syn-pink: #d16d9e;
+  --syn-status: #007acc;
+
+  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --mouse-x: 50vw;
+  --mouse-y: 50vh;
+}
+
+[data-theme="tokyo-night"] {
+  --color-bg: #1a1b26;
+  --color-surface-1: #16161e;
+  --color-surface-2: #1f2335;
+  --color-border: rgba(122, 162, 247, 0.15);
+  --color-text-primary: #c0caf5;
+  --color-text-secondary: #9aa5ce;
+
+  --syn-blue: #7aa2f7;
+  --syn-orange: #ff9e64;
+  --syn-yellow: #e0af68;
+  --syn-teal: #7dcfff;
+  --syn-purple: #bb9af7;
+  --syn-green: #9ece6a;
+  --syn-pink: #f7768e;
+  --syn-status: #3d59a1;
+}
+
+[data-theme="dracula"] {
+  --color-bg: #282a36;
+  --color-surface-1: #21222c;
+  --color-surface-2: #343746;
+  --color-border: rgba(189, 147, 249, 0.18);
+  --color-text-primary: #f8f8f2;
+  --color-text-secondary: #a4b3dc;
+
+  --syn-blue: #8be9fd;
+  --syn-orange: #ffb86c;
+  --syn-yellow: #f1fa8c;
+  --syn-teal: #50fa7b;
+  --syn-purple: #bd93f9;
+  --syn-green: #50fa7b;
+  --syn-pink: #ff79c6;
+  --syn-status: #6272a4;
+}
+
+[data-theme="monokai"] {
+  --color-bg: #272822;
+  --color-surface-1: #1e1f1c;
+  --color-surface-2: #383830;
+  --color-border: rgba(255, 255, 255, 0.12);
+  --color-text-primary: #f8f8f2;
+  --color-text-secondary: #a6a28c;
+
+  --syn-blue: #66d9ef;
+  --syn-orange: #fd971f;
+  --syn-yellow: #e6db74;
+  --syn-teal: #a6e22e;
+  --syn-purple: #ae81ff;
+  --syn-green: #a6e22e;
+  --syn-pink: #f92672;
+  --syn-status: #49483e;
+}
+
+html, body {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+}
+
+/* Custom VS Code Scrollbars */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Typography Utility Classes - NO SERIF, NO ITALICS */
+.font-heading {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+}
+
+.font-mono-code {
+  font-family: var(--font-mono);
+}
+
+/* Dotted Grid Background */
+.bg-editor-grid {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Blinking Caret Animation */
+@keyframes caret-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-caret-blink {
+  animation: caret-blink 1.06s steps(1) infinite;
+}
+
+/* Pulse Glow Animation */
+@keyframes soft-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.65; transform: scale(1.04); }
+}
+
+.animate-soft-pulse {
+  animation: soft-pulse 4s ease-in-out infinite;
+}
+
+/* Home Code Wall Drift */
+@keyframes code-drift-up {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
+.animate-code-drift {
+  animation: code-drift-up 60s linear infinite;
+}
+
+/* Skateboard Ollie Animation */
+@keyframes skate-ollie {
+  0% { transform: translateX(-120px) translateY(0) rotate(0deg); }
+  35% { transform: translateX(30vw) translateY(0) rotate(0deg); }
+  45% { transform: translateX(45vw) translateY(-40px) rotate(-15deg); }
+  55% { transform: translateX(55vw) translateY(-40px) rotate(10deg); }
+  65% { transform: translateX(65vw) translateY(0) rotate(0deg); }
+  100% { transform: translateX(110vw) translateY(0) rotate(0deg); }
+}
+
+.animate-skate-ollie {
+  animation: skate-ollie 10s ease-in-out infinite;
+}
+
+/* Screen-Wide Skateboard Roll Across Screen with an Ollie */
+@keyframes skate-screen {
+  0% { transform: translateX(-10vw) translateY(0) rotate(0deg); }
+  35% { transform: translateX(35vw) translateY(0) rotate(0deg); }
+  45% { transform: translateX(48vw) translateY(-45px) rotate(-18deg); }
+  55% { transform: translateX(58vw) translateY(-45px) rotate(14deg); }
+  65% { transform: translateX(68vw) translateY(0) rotate(0deg); }
+  100% { transform: translateX(115vw) translateY(0) rotate(0deg); }
+}
+
+.animate-skate-screen {
+  animation: skate-screen 2.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+/* Continuous Marquee Ticker */
+@keyframes marquee-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 24s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Portrait Faint Code Scroll */
+@keyframes portrait-code-drift {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
+.animate-portrait-code {
+  animation: portrait-code-drift 22s linear infinite;
+}
+
+/* Background Large Mono Outlined Text Band Slide */
+@keyframes band-slide-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-band-slide {
+  animation: band-slide-left 40s linear infinite;
+}
+
+/* Per-Section ::selection Colors */
+#home ::selection { background: rgba(86, 156, 214, 0.4); color: #ffffff; }
+#about ::selection { background: rgba(78, 201, 176, 0.4); color: #ffffff; }
+#after-hours ::selection { background: rgba(209, 109, 158, 0.4); color: #ffffff; }
+#projects ::selection { background: rgba(197, 134, 192, 0.4); color: #ffffff; }
+#skills ::selection { background: rgba(220, 220, 170, 0.4); color: #ffffff; }
+#experience ::selection { background: rgba(206, 145, 120, 0.4); color: #ffffff; }
+#resume ::selection { background: rgba(86, 156, 214, 0.4); color: #ffffff; }
+#contact ::selection { background: rgba(106, 153, 85, 0.4); color: #ffffff; }
+
+/* 3D Transform Utilities for Rubik's Cube */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+/* Desktop Scroll Snap */
+@media (min-width: 768px) {
+  .editor-scroll-snap {
+    scroll-snap-type: y proximity;
+  }
+  .section-snap-item {
+    scroll-snap-align: start;
+    scroll-snap-stop: normal;
+  }
+}
+
+/* Targeted Reduced Motion Support (disables heavy drift, marquee, and parallax; keeps fast 250ms cross-fades) */
+[data-motion="reduced"] .animate-code-drift,
+[data-motion="reduced"] .animate-skate-ollie,
+[data-motion="reduced"] .animate-marquee,
+[data-motion="reduced"] .animate-band-slide,
+[data-motion="reduced"] .animate-portrait-code {
+  animation: none !important;
+}
+
+[data-motion="reduced"] .parallax-layer {
+  transform: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :not([data-motion="full"]) .animate-code-drift,
+  :not([data-motion="full"]) .animate-skate-ollie,
+  :not([data-motion="full"]) .animate-marquee,
+  :not([data-motion="full"]) .animate-band-slide,
+  :not([data-motion="full"]) .animate-portrait-code {
+    animation: none !important;
+  }
+}
+
+/* Forced Colors Support (High Contrast Windows Modes) */
+@media (forced-colors: active) {
+  * {
+    forced-color-adjust: auto;
+  }
+  button, a {
+    outline: 1px solid currentColor !important;
+  }
+}
+
+/* Print Stylesheet (Clean Black on White for Resume & Article printing) */
+@media print {
+  html, body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+  header, footer, nav, aside, [role="contentinfo"], .no-print, canvas, .animate-code-drift, .animate-skate-ollie {
+    display: none !important;
+  }
+  main, #main-content, .editor-scroll-snap {
+    overflow: visible !important;
+    height: auto !important;
+  }
+  a {
+    color: #000000 !important;
+    text-decoration: underline !important;
+  }
+}
