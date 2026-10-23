@@ -249,28 +249,13 @@ export const HomeSection: React.FC<HomeSectionProps> = ({ onNavigate, hasScrolle
       <div className="max-w-[1200px] w-full mx-auto px-6 sm:px-8 lg:px-10 xl:px-16 my-auto relative z-10">
         <SectionWatermark index="01" />
 
-        {/* Mobile 120px Round Portrait above Eyebrow, stacked on left edge */}
-        <div className="md:hidden flex justify-start pb-2">
-          <div className="w-[120px] h-[120px] rounded-full overflow-hidden border border-white/10 shadow-xl bg-white relative">
-            <picture className="w-full h-full block">
-              <source srcSet="/photo/rohan-400.webp" type="image/webp" />
-              <img
-                src="/photo/rohan.jpg"
-                alt="Portrait of Rohan Sai Jagan speaking into a microphone."
-                width={120}
-                height={120}
-                loading="eager"
-                className="w-full h-full object-cover"
-                style={{ objectPosition: '50% 32%' }}
-              />
-            </picture>
-            <div
-              style={{ color: phraseAccent }}
-              className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full bg-[#0a0c10] text-[9px] font-mono leading-none tracking-wide select-none shadow-md border border-white/10"
-            >
-              {activeRoleTag}
-            </div>
-          </div>
+        {/* Mobile Round Portrait with Rotating Circular Role Tag */}
+        <div className="md:hidden flex justify-start pt-2 pb-3 pl-4">
+          <PortraitArtwork
+            roleTag={activeRoleTag}
+            sizeClass="w-[120px] h-[120px]"
+            showCaption={false}
+          />
         </div>
 
         {/* ROW 1: Eyebrow — tight to name below, generous space above mobile portrait */}

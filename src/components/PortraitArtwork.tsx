@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useId } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
 import { useTheme } from '../context/ThemeContext.tsx';
 
@@ -6,19 +6,46 @@ interface PortraitArtworkProps {
   onNameCompiled?: boolean;
   roleTag?: string;
   sizeClass?: string;
+  showCaption?: boolean;
 }
 
 export const PortraitArtwork: React.FC<PortraitArtworkProps> = ({
   roleTag = 'builder',
   sizeClass = 'w-[clamp(220px,23vw,340px)] h-[clamp(220px,23vw,340px)]',
+  showCaption = true,
 }) => {
   const { phraseAccent, isReducedMotion } = useTheme();
 
   const [isHovered, setIsHovered] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [developComplete, setDevelopComplete] = useState(false);
-  const [boxDrift, setBoxDrift] = useState({ x: 0, y: 0, scale: 1 });
+  const [displayTag, setDisplayTag] = useState(roleTag);
+  const [isFading, setIsFading] = useState(false);
+
   const containerRef = useRef<HTMLDivElement>(null);
+  const reactId = useId();
+  const pathId = `portrait-circle-${reactId.replace(/[^a-zA-Z0-9_-]/g, '')}`;
+
+  // Smooth cross-fade when roleTag changes
+  useEffect(() => {
+    if (roleTag !== displayTag) {
+      setIsFading(true);
+      const timer = setTimeout(() => {
+        setDisplayTag(roleTag);
+        setIsFading(false);
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [roleTag, displayTag]);
+
+  // Dynamically compute repeated text to evenly wrap around the circular path (~1131px)
+  const repeatedText = useMemo(() => {
+    const clean = (displayTag || 'builder').toUpperCase().trim();
+    const unit = ` • ${clean} `;
+    // Target ~56-62 characters total for optimal spacing around the circumference
+    const repeatCount = Math.max(4, Math.round(58 / unit.length));
+    return unit.repeat(repeatCount);
+  }, [displayTag]);
 
   // Parallax Tilt Values (max 5 degrees per spec)
   const x = useMotionValue(0);
@@ -72,19 +99,6 @@ export const PortraitArtwork: React.FC<PortraitArtworkProps> = ({
     return () => clearTimeout(timer);
   }, [isReducedMotion]);
 
-  // Subtle CV detection box gentle re-fitting / random drift every 3.5s
-  useEffect(() => {
-    if (isReducedMotion) return;
-    const interval = window.setInterval(() => {
-      setBoxDrift({
-        x: (Math.random() - 0.5) * 6,
-        y: (Math.random() - 0.5) * 6,
-        scale: 0.98 + Math.random() * 0.04,
-      });
-    }, 3500);
-    return () => window.clearInterval(interval);
-  }, [isReducedMotion]);
-
   return (
     <div className="flex flex-col justify-between items-end h-full select-none">
       {/* 3D Tilting & Floating Container */}
@@ -108,46 +122,72 @@ export const PortraitArtwork: React.FC<PortraitArtworkProps> = ({
             opacity: isHovered ? 0.22 : 0.12,
             transition: 'background 600ms ease, opacity 500ms ease',
           }}
-          className="absolute inset-[-20px] rounded-full blur-2xl pointer-events-none -z-10"
+          className="absolute inset-[-24px] rounded-full blur-2xl pointer-events-none -z-10"
         />
 
         {/* Orbiting Container: Exact circle size class */}
         <div className={`relative ${sizeClass} flex items-center justify-center shrink-0`}>
-          {/* Thin 1px Hairline Ring just outside the accent ring */}
-          <div className="absolute inset-[-14px] rounded-full border border-white/10 pointer-events-none z-10" />
+          {/* Subtle Concentric Hairline Ring */}
+          <div className="absolute inset-[-8px] rounded-full border border-white/10 pointer-events-none z-10" />
 
-          {/* Exactly ONE Accent Ring in --phrase-accent that draws itself once */}
+          {/* Delicate Dashed Track Ring in phraseAccent */}
           <svg
-            className="absolute inset-[-12px] w-[calc(100%+24px)] h-[calc(100%+24px)] pointer-events-none z-10"
+            className="absolute inset-[-24px] sm:inset-[-28px] w-[calc(100%+48px)] sm:w-[calc(100%+56px)] h-[calc(100%+48px)] sm:h-[calc(100%+56px)] pointer-events-none z-10"
             viewBox="0 0 400 400"
             fill="none"
           >
             <circle
               cx="200"
               cy="200"
-              r="192"
+              r="180"
               stroke={phraseAccent}
-              strokeWidth="1.5"
-              strokeDasharray="1210"
-              strokeDashoffset={isLoaded ? '0' : '1210'}
-              style={{ transition: 'stroke 600ms ease, stroke-dashoffset 1000ms ease-out' }}
-              className="opacity-80"
+              strokeWidth="1"
+              strokeDasharray="4 6"
+              strokeOpacity="0.25"
+              style={{ transition: 'stroke 600ms ease' }}
             />
           </svg>
 
-          {/* Exactly ONE Small Glowing Dot Orbiting Slowly */}
+          {/* Rotating Text Around the Portrait */}
           <div
             aria-hidden="true"
-            className="absolute inset-[-12px] w-[calc(100%+24px)] h-[calc(100%+24px)] pointer-events-none z-20 animate-spin"
-            style={{ animationDuration: '24s', animationTimingFunction: 'linear' }}
+            className={`absolute inset-[-24px] sm:inset-[-28px] w-[calc(100%+48px)] sm:w-[calc(100%+56px)] h-[calc(100%+48px)] sm:h-[calc(100%+56px)] pointer-events-none z-20 ${
+              isReducedMotion ? '' : 'animate-spin'
+            }`}
+            style={{
+              animationDuration: '24s',
+              animationTimingFunction: 'linear',
+            }}
           >
-            <div
-              className="w-2.5 h-2.5 rounded-full absolute top-[-5px] left-1/2 -translate-x-1/2 transition-colors duration-600"
-              style={{
-                backgroundColor: phraseAccent,
-                boxShadow: `0 0 10px ${phraseAccent}`,
-              }}
-            />
+            <svg
+              viewBox="0 0 400 400"
+              className="w-full h-full overflow-visible"
+            >
+              <defs>
+                <path
+                  id={pathId}
+                  d="M 200, 200 m -180, 0 a 180,180 0 1,1 360,0 a 180,180 0 1,1 -360,0"
+                />
+              </defs>
+              <text
+                className="font-mono text-[10.5px] font-semibold tracking-[0.18em] uppercase select-none"
+                style={{
+                  fill: phraseAccent,
+                  filter: `drop-shadow(0 0 4px ${phraseAccent}55)`,
+                  transition: 'fill 600ms ease, filter 600ms ease, opacity 200ms ease',
+                  opacity: isFading ? 0 : 1,
+                }}
+              >
+                <textPath
+                  href={`#${pathId}`}
+                  startOffset="0%"
+                  textLength="1131"
+                  lengthAdjust="spacing"
+                >
+                  {repeatedText}
+                </textPath>
+              </text>
+            </svg>
           </div>
 
           {/* Portrait Circle with Original B&W Photo, white background, no filter, no tint */}
@@ -176,55 +216,15 @@ export const PortraitArtwork: React.FC<PortraitArtworkProps> = ({
                 }}
               />
             </picture>
-
-            {/* Computer-Vision Detection Box over Face — dark semi-transparent overlay, accent corners */}
-            <div
-              aria-hidden="true"
-              style={{
-                top: '25%',
-                left: '27%',
-                width: '46%',
-                height: '46%',
-                transform: `translate3d(${boxDrift.x}px, ${boxDrift.y}px, 0) scale(${boxDrift.scale})`,
-                transition: 'transform 1200ms cubic-bezier(0.2, 0.8, 0.2, 1), border-color 600ms ease',
-                borderColor: `${phraseAccent}cc`,
-                background: 'rgba(10, 12, 16, 0.15)',
-              }}
-              className="absolute z-20 pointer-events-none border-2 rounded-lg"
-            >
-              {/* 4 Corner Ticks — 3px stroke, larger, higher contrast */}
-              <span
-                style={{ borderColor: phraseAccent, transition: 'border-color 600ms ease' }}
-                className="absolute -top-[3px] -left-[3px] w-3.5 h-3.5 border-t-[3px] border-l-[3px] rounded-tl"
-              />
-              <span
-                style={{ borderColor: phraseAccent, transition: 'border-color 600ms ease' }}
-                className="absolute -top-[3px] -right-[3px] w-3.5 h-3.5 border-t-[3px] border-r-[3px] rounded-tr"
-              />
-              <span
-                style={{ borderColor: phraseAccent, transition: 'border-color 600ms ease' }}
-                className="absolute -bottom-[3px] -left-[3px] w-3.5 h-3.5 border-b-[3px] border-l-[3px] rounded-bl"
-              />
-              <span
-                style={{ borderColor: phraseAccent, transition: 'border-color 600ms ease' }}
-                className="absolute -bottom-[3px] -right-[3px] w-3.5 h-3.5 border-b-[3px] border-r-[3px] rounded-br"
-              />
-
-              {/* Crisp Dark Pill Label: background #0a0c10, accent text, mono 12px */}
-              <div
-                style={{ color: phraseAccent, transition: 'color 600ms ease' }}
-                className="absolute -top-4 left-0 px-2 py-0.5 rounded-full bg-[#0a0c10] text-[12px] font-mono leading-none tracking-wide select-none shadow-md border border-white/10"
-              >
-                {roleTag}
-              </div>
-            </div>
           </div>
         </div>
 
         {/* Small Centred Mono Caption Below: "rohan.jpg · still running" */}
-        <p className="mt-3.5 font-mono text-xs text-[#aab2c0]/70 text-right w-full tracking-wide">
-          rohan.jpg · still running
-        </p>
+        {showCaption && (
+          <p className="mt-3.5 font-mono text-xs text-[#aab2c0]/70 text-right w-full tracking-wide">
+            rohan.jpg · still running
+          </p>
+        )}
       </motion.div>
     </div>
   );
